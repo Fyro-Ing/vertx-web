@@ -51,7 +51,7 @@ public class WebClientTestBase extends HttpTestBase {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    client = vertx.createHttpClient(new HttpClientOptions().setDefaultPort(8080).setDefaultHost("localhost"));
+    client = vertx.createHttpClient(new HttpClientOptions().setDefaultPort(8080).setDefaultHost("localhost").setIdleTimeout(3));
     webClient = WebClient.wrap(client);
     server.close();
     server = vertx.createHttpServer(new HttpServerOptions().setPort(DEFAULT_HTTP_PORT).setHost(DEFAULT_HTTP_HOST));

@@ -1069,6 +1069,30 @@ public class WebClientTest extends WebClientTestBase {
   }
 
   @Test
+  public void testOverrideDefaultTimeout() throws Exception {
+    server.requestHandler(req -> {
+      System.out.println("** vertx#setTimer **");
+      vertx.setTimer(5000, h -> {
+        System.out.println("** timer ended **");
+        req.response().end();
+      });
+    });
+    startServer();
+    HttpRequest<Buffer> get = webClient.get(DEFAULT_HTTP_PORT, DEFAULT_HTTP_HOST, "/somepath");
+    long start = System.currentTimeMillis();
+    get.timeout(6000).send(result -> {
+      long end = (System.currentTimeMillis() - start);
+      if (result.failed()) {
+        System.out.println("** fail **" + end);
+      } else {
+        System.out.println("** success **" + end);
+      }
+      testComplete();
+    });
+    await();
+  }
+
+  @Test
   public void testQueryParam() throws Exception {
     testRequest(client -> client.get(DEFAULT_HTTP_PORT, DEFAULT_HTTP_HOST, "/").addQueryParam("param", "param_value"), req -> {
       assertEquals("param=param_value", req.query());
